@@ -12,8 +12,14 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.klakcodes.ruckingtracker",
       "adaptiveIcon": {
         "backgroundColor": "#f8fafc"
+      }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "8428da56-a434-4013-ab23-0e4dc326e4c1"
       }
     }
   }

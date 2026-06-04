@@ -8,9 +8,10 @@ type HistoryScreenProps = {
   rucks: RuckEntry[];
   onBack: () => void;
   onDelete: (id: string) => void;
+  onEdit: (ruck: RuckEntry) => void;
 };
 
-export function HistoryScreen({ rucks, onBack, onDelete }: HistoryScreenProps) {
+export function HistoryScreen({ rucks, onBack, onDelete, onEdit }: HistoryScreenProps) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -26,7 +27,7 @@ export function HistoryScreen({ rucks, onBack, onDelete }: HistoryScreenProps) {
       <FlatList
         data={rucks}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <RuckCard ruck={item} onDelete={onDelete} />}
+        renderItem={({ item }) => <RuckCard ruck={item} onDelete={onDelete} onEdit={onEdit} />}
         contentContainerStyle={rucks.length === 0 ? styles.emptyList : styles.list}
         ListEmptyComponent={
           <View style={styles.emptyState}>

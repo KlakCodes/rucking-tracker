@@ -6,9 +6,11 @@ A simple Expo and React Native app for manually tracking rucking workouts.
 
 - Add rucks with date, distance, duration, carried weight, and notes.
 - Save entries locally on the device with AsyncStorage.
+- Edit existing ruck entries from the history list.
 - View total rucks completed, total distance, and average pace.
 - See the most recent ruck on the home screen.
 - Browse history and delete saved rucks.
+- View a simple distance-over-time progress chart.
 
 ## Tech Stack
 
@@ -16,6 +18,8 @@ A simple Expo and React Native app for manually tracking rucking workouts.
 - React Native
 - Expo
 - AsyncStorage
+- react-native-chart-kit
+- react-native-svg
 
 ## Install Dependencies
 
@@ -31,6 +35,13 @@ AsyncStorage is included in `package.json`. If you ever need to install it manua
 
 ```bash
 npx expo install @react-native-async-storage/async-storage
+```
+
+The progress chart uses `react-native-chart-kit` and `react-native-svg`. They are included in `package.json`. If you ever need to install them manually in a fresh Expo SDK 54 project, run:
+
+```bash
+npx expo install react-native-svg
+npm install react-native-chart-kit
 ```
 
 ## Run The App
@@ -66,12 +77,15 @@ npm run ios
 App.tsx
 src/
   components/
+    RuckForm.tsx
     RuckCard.tsx
     SummaryCard.tsx
   screens/
     AddRuckScreen.tsx
+    EditRuckScreen.tsx
     HistoryScreen.tsx
     HomeScreen.tsx
+    ProgressScreen.tsx
   storage/
     ruckStorage.ts
   utils/

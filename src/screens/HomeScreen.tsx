@@ -16,9 +16,16 @@ type HomeScreenProps = {
   rucks: RuckEntry[];
   onAddRuck: () => void;
   onViewHistory: () => void;
+  onViewProgress: () => void;
 };
 
-export function HomeScreen({ isLoading, rucks, onAddRuck, onViewHistory }: HomeScreenProps) {
+export function HomeScreen({
+  isLoading,
+  rucks,
+  onAddRuck,
+  onViewHistory,
+  onViewProgress,
+}: HomeScreenProps) {
   const mostRecentRuck = rucks[0];
   const totalMiles = getTotalDistanceMiles(rucks);
   const totalKilometres = getTotalDistanceKilometres(rucks);
@@ -43,6 +50,10 @@ export function HomeScreen({ isLoading, rucks, onAddRuck, onViewHistory }: HomeS
 
       <Pressable style={styles.secondaryButton} onPress={onViewHistory}>
         <Text style={styles.secondaryButtonText}>View History</Text>
+      </Pressable>
+
+      <Pressable style={styles.secondaryButton} onPress={onViewProgress}>
+        <Text style={styles.secondaryButtonText}>View Progress</Text>
       </Pressable>
 
       <View style={styles.sectionHeader}>

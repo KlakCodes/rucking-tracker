@@ -1,6 +1,7 @@
-import { DistanceUnit, RuckEntry } from "../types";
+import { DistanceUnit, RuckEntry, WeightUnit } from "../types";
 
 const KM_PER_MILE = 1.609344;
+const LB_PER_KG = 2.2046226218;
 
 export function getDurationMinutes(entry: RuckEntry): number {
   return entry.durationHours * 60 + entry.durationMinutes;
@@ -12,6 +13,14 @@ export function distanceToMiles(distance: number, unit: DistanceUnit): number {
 
 export function distanceToKilometres(distance: number, unit: DistanceUnit): number {
   return unit === "kilometres" ? distance : distance * KM_PER_MILE;
+}
+
+export function weightToKilograms(weight: number, unit: WeightUnit): number {
+  return unit === "kg" ? weight : weight / LB_PER_KG;
+}
+
+export function weightToPounds(weight: number, unit: WeightUnit): number {
+  return unit === "lb" ? weight : weight * LB_PER_KG;
 }
 
 export function getTotalDistanceMiles(entries: RuckEntry[]): number {

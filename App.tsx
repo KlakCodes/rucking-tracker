@@ -3,17 +3,20 @@ import { Alert, StatusBar, StyleSheet, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 import { AddRuckScreen } from "./src/screens/AddRuckScreen";
+import { EditRuckScreen } from "./src/screens/EditRuckScreen";
 import { HistoryScreen } from "./src/screens/HistoryScreen";
 import { HomeScreen } from "./src/screens/HomeScreen";
+import { ProgressScreen } from "./src/screens/ProgressScreen";
 import { deleteRuckEntries, loadRuckEntries, saveRuckEntries } from "./src/storage/ruckStorage";
 import { colors } from "./src/theme";
 import { RuckEntry } from "./src/types";
 
-type ScreenName = "home" | "add" | "history";
+type ScreenName = "home" | "add" | "history" | "edit" | "progress";
 
 export default function App() {
   const [screen, setScreen] = useState<ScreenName>("home");
   const [rucks, setRucks] = useState<RuckEntry[]>([]);
+  const [selectedRuck, setSelectedRuck] = useState<RuckEntry | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -38,6 +41,27 @@ export default function App() {
     setScreen("home");
   }, [rucks]);
 
+  const handleStartEdit = useCallback((ruck: RuckEntry) => {
+    setSelectedRuck(ruck);
+    setScreen("edit");
+  }, []);
+
+  const handleUpdateRuck = useCallback(async (updatedEntry: RuckEntry) => {
+    const nextRucks = rucks.map((ruck) =>
+      ruck.id === updatedEntry.id ? updatedEntry : ruck,
+    );
+
+    setRucks(nextRucks);
+    await saveRuckEntries(nextRucks);
+    setSelectedRuck(null);
+    setScreen("history");
+  }, [rucks]);
+
+  const handleCancelEdit = useCallback(() => {
+    setSelectedRuck(null);
+    setScreen("history");
+  }, []);
+
   const handleDeleteRuck = useCallback((id: string) => {
     Alert.alert("Delete ruck?", "This will remove the ruck from your history.", [
       { text: "Cancel", style: "cancel" },
@@ -47,10 +71,13 @@ export default function App() {
         onPress: async () => {
           const nextRucks = await deleteRuckEntries(id, rucks);
           setRucks(nextRucks);
+          if (selectedRuck?.id === id) {
+            setSelectedRuck(null);
+          }
         },
       },
     ]);
-  }, [rucks]);
+  }, [rucks, selectedRuck]);
 
   return (
     <SafeAreaProvider>
@@ -63,6 +90,7 @@ export default function App() {
               rucks={sortedRucks}
               onAddRuck={() => setScreen("add")}
               onViewHistory={() => setScreen("history")}
+              onViewProgress={() => setScreen("progress")}
             />
           )}
 
@@ -78,6 +106,22 @@ export default function App() {
               rucks={sortedRucks}
               onBack={() => setScreen("home")}
               onDelete={handleDeleteRuck}
+              onEdit={handleStartEdit}
+            />
+          )}
+
+          {screen === "edit" && selectedRuck && (
+            <EditRuckScreen
+              ruck={selectedRuck}
+              onCancel={handleCancelEdit}
+              onSave={handleUpdateRuck}
+            />
+          )}
+
+          {screen === "progress" && (
+            <ProgressScreen
+              rucks={rucks}
+              onBack={() => setScreen("home")}
             />
           )}
         </View>

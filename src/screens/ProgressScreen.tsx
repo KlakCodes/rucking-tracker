@@ -8,6 +8,8 @@ import {
   distanceToKilometres,
   distanceToMiles,
   formatDistance,
+  getProgressStats,
+  ProgressStat,
   weightToKilograms,
   weightToPounds,
 } from "../utils/ruckStats";
@@ -36,6 +38,14 @@ export function ProgressScreen({ rucks, onBack }: ProgressScreenProps) {
   const labels = buildReadableDateLabels(sortedRucks);
   const distanceChart = buildDistanceChart(sortedRucks);
   const weightChart = buildWeightChart(sortedRucks);
+  const progressStats = getProgressStats(rucks);
+  const statCards = [
+    progressStats.longestRuck,
+    progressStats.heaviestRuck,
+    progressStats.fastestPace,
+    progressStats.totalDistanceThisMonth,
+  ];
+  const shouldUseTwoColumns = width >= 380;
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -51,25 +61,45 @@ export function ProgressScreen({ rucks, onBack }: ProgressScreenProps) {
 
       {sortedRucks.length === 0 ? (
         <View style={styles.emptyState}>
-          <Text style={styles.emptyTitle}>No progress to chart yet</Text>
-          <Text style={styles.emptyText}>Add your first ruck to start building a progress chart.</Text>
+          <Text style={styles.emptyTitle}>No progress yet</Text>
+          <Text style={styles.emptyText}>
+            Add your first ruck to start building stats and progress charts.
+          </Text>
         </View>
       ) : (
-        <View style={styles.chartCard}>
-          {sortedRucks.length === 1 && (
-            <Text style={styles.helperText}>
-              One ruck is logged. Add more entries to see a clear trend line.
-            </Text>
-          )}
+        <>
+          <View style={styles.statsSection}>
+            {statCards.map((stat) => (
+              <StatCard key={stat.label} stat={stat} twoColumns={shouldUseTwoColumns} />
+            ))}
+          </View>
 
-          <ProgressLineChart chart={distanceChart} labels={labels} width={chartWidth} />
+          <View style={styles.chartCard}>
+            {sortedRucks.length === 1 && (
+              <Text style={styles.helperText}>
+                One ruck is logged. Add more entries to see a clear trend line.
+              </Text>
+            )}
 
-          <View style={styles.chartDivider} />
+            <ProgressLineChart chart={distanceChart} labels={labels} width={chartWidth} />
 
-          <ProgressLineChart chart={weightChart} labels={labels} width={chartWidth} />
-        </View>
+            <View style={styles.chartDivider} />
+
+            <ProgressLineChart chart={weightChart} labels={labels} width={chartWidth} />
+          </View>
+        </>
       )}
     </ScrollView>
+  );
+}
+
+function StatCard({ stat, twoColumns }: { stat: ProgressStat; twoColumns: boolean }) {
+  return (
+    <View style={[styles.statCard, twoColumns && styles.statCardTwoColumn]}>
+      <Text style={styles.statLabel}>{stat.label}</Text>
+      <Text style={styles.statValue}>{stat.value}</Text>
+      {stat.supportText ? <Text style={styles.statSupport}>{stat.supportText}</Text> : null}
+    </View>
   );
 }
 
@@ -246,6 +276,39 @@ const styles = StyleSheet.create({
   backButtonText: {
     color: colors.text,
     fontWeight: "700",
+  },
+  statsSection: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: spacing.md,
+    marginBottom: spacing.lg,
+  },
+  statCard: {
+    width: "100%",
+    padding: spacing.lg,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.card,
+  },
+  statCardTwoColumn: {
+    flexGrow: 1,
+    flexBasis: "45%",
+  },
+  statLabel: {
+    color: colors.mutedText,
+    fontSize: 13,
+    fontWeight: "700",
+  },
+  statValue: {
+    marginTop: spacing.sm,
+    color: colors.text,
+    fontSize: 22,
+    fontWeight: "800",
+  },
+  statSupport: {
+    marginTop: spacing.xs,
+    color: colors.mutedText,
   },
   chartCard: {
     paddingVertical: spacing.lg,

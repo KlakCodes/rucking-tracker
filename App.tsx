@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Alert, StatusBar, StyleSheet, View } from "react-native";
+import { Alert, BackHandler, StatusBar, StyleSheet, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 import { AddRuckScreen } from "./src/screens/AddRuckScreen";
@@ -61,6 +61,19 @@ export default function App() {
     setSelectedRuck(null);
     setScreen("history");
   }, []);
+
+  useEffect(() => {
+    const handler = BackHandler.addEventListener("hardwareBackPress", () => {
+      if (screen === "home") return false;
+      if (screen === "edit") {
+        handleCancelEdit();
+      } else {
+        setScreen("home");
+      }
+      return true;
+    });
+    return () => handler.remove();
+  }, [screen, handleCancelEdit]);
 
   const handleDeleteRuck = useCallback((id: string) => {
     Alert.alert("Delete ruck?", "This will remove the ruck from your history.", [
